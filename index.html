@@ -18,11 +18,9 @@ button{padding:12px 16px;font-size:16px;border:0;border-radius:10px;background:#
 <script>
 const KEY="AIzaSyC05G5ajojPc25R0Q81fACPyvFC7ZabpEI"; // <-- paste your Google Maps API key here
 const DEST=[
- {n:"Potential Job",a:"408 Landmark Dr, Wilmington, NC 28412",c:"#e53935"},
- {n:"Nikki",a:"9904 Horton Road, New Hill, NC 27562",c:"#1e88e5"},
- {n:"Tamara",a:"1104 Chatham Ln, Raleigh, NC 27856",c:"#fb8c00"},
- {n:"Bebe",a:"617 Sanibel Dr, Nashville, NC 27610",c:"#8e24aa"},
- {n:"Mike",a:"6816 Latigo Lane, Wendell, NC 27591",c:"#43a047"}];
+ {n:"Wilmington",a:"408 Landmark Dr, Wilmington, NC 28412",c:"#e53935"},
+ {n:"New Hill",a:"9904 Horton Road, New Hill, NC 27562",c:"#1e88e5"},
+ {n:"Wendell",a:"6816 Latigo Lane, Wendell, NC 27591",c:"#43a047"}];
 let map,Route,overlays=[];
 window.initMap=async()=>{
  const {Map}=await google.maps.importLibrary("maps");
@@ -34,7 +32,7 @@ const err=t=>{const m=document.getElementById("msg");m.style.display="block";m.t
 window.gm_authFailure=()=>err("Google rejected the API key. Check that the key is correct, Maps JavaScript API and Routes API are enabled, billing is on, and the website restriction matches this site's address.");
 const q=new URLSearchParams(location.search).get("address");
 if(q)document.getElementById("o").value=q;
-if(KEY==="AIzaSyC05G5ajojPc25R0Q81fACPyvFC7ZabpEI")err("Paste your Google API key into the file where it says YOUR_API_KEY.");
+if(KEY==="YOUR_API_KEY")err("Paste your Google API key into the file where it says YOUR_API_KEY.");
 const s=document.createElement("script");
 s.src=`https://maps.googleapis.com/maps/api/js?key=${KEY}&loading=async&callback=initMap&v=weekly`;
 s.onerror=()=>err("Could not load Google Maps. Check your internet connection and API key.");
