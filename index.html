@@ -28,6 +28,9 @@ window.initMap=async()=>{
  ({Route}=await google.maps.importLibrary("routes"));
  map=new Map(document.getElementById("map"),{center:{lat:35.5,lng:-78.3},zoom:7,mapId:"DEMO_MAP_ID"});
 };
+  const q=new URLSearchParams(location.search).get("address");
+ if(q){document.getElementById("o").value=q;document.getElementById("go").click();}
+};
 const s=document.createElement("script");
 s.src=`https://maps.googleapis.com/maps/api/js?key=${KEY}&loading=async&callback=initMap&v=weekly`;
 document.head.appendChild(s);
