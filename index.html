@@ -27,6 +27,8 @@ window.initMap=async()=>{
  const {Map}=await google.maps.importLibrary("maps");
  ({Route}=await google.maps.importLibrary("routes"));
  map=new Map(document.getElementById("map"),{center:{lat:35.5,lng:-78.3},zoom:7,mapId:"DEMO_MAP_ID"});
+  const q=new URLSearchParams(location.search).get("address");
+ if(q){document.getElementById("o").value=q;document.getElementById("go").click();}
 };
 const fmt=ms=>{const m=Math.round(ms/60000),h=Math.floor(m/60);return h?`${h} hr ${m%60} min`:`${m} min`};
 document.getElementById("go").onclick=async()=>{
