@@ -27,14 +27,19 @@ window.initMap=async()=>{
  const {Map}=await google.maps.importLibrary("maps");
  ({Route}=await google.maps.importLibrary("routes"));
  map=new Map(document.getElementById("map"),{center:{lat:35.5,lng:-78.3},zoom:7,mapId:"DEMO_MAP_ID"});
-};
+ if(document.getElementById("o").value)document.getElementById("go").click();};
   const q=new URLSearchParams(location.search).get("address");
  if(q){document.getElementById("o").value=q;document.getElementById("go").click();}
 };
+const err=t=>{const m=document.getElementById("msg");m.style.display="block";m.textContent=t};
+window.gm_authFailure=()=>err("Google rejected the API key. Check that the key is correct, Maps JavaScript API and Routes API are enabled, billing is on, and the website restriction matches this site's address.");
+const q=new URLSearchParams(location.search).get("address");
+if(q)document.getElementById("o").value=q;
+if(KEY==="YOUR_API_KEY")err("Paste your Google API key into the file where it says YOUR_API_KEY.");
 const s=document.createElement("script");
 s.src=`https://maps.googleapis.com/maps/api/js?key=${KEY}&loading=async&callback=initMap&v=weekly`;
+s.onerror=()=>err("Could not load Google Maps. Check your internet connection and API key.");
 document.head.appendChild(s);
-
 const fmt=ms=>{const m=Math.round(ms/60000),h=Math.floor(m/60);return h?`${h} hr ${m%60} min`:`${m} min`};
 document.getElementById("go").onclick=async()=>{
  const o=document.getElementById("o").value.trim(),res=document.getElementById("res");
