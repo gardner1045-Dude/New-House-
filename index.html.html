@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drive Times Map</title>
+<style>
+body{margin:0;font:16px/1.4 system-ui,sans-serif;color:#1a1d21;background:#f6f7f9}
+#bar{display:flex;gap:8px;padding:12px}
+#o{flex:1;padding:12px;font-size:16px;border:1px solid #ccd;border-radius:10px}
+button{padding:12px 16px;font-size:16px;border:0;border-radius:10px;background:#1a73e8;color:#fff}
+#map{height:45vh;width:100%}
+#res{padding:8px 12px 24px}
+.row{display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:12px;padding:12px 14px;margin-top:8px;border-left:6px solid var(--c)}
+.row small{color:#6b7280;display:block}.t{font-size:20px;font-weight:600;text-align:right}
+</style></head><body>
+<div id="bar"><input id="o" placeholder="Enter starting address"><button id="go">Go</button></div>
+<div id="map"></div><div id="res"></div>
+<script>
+const KEY=AIzaSyC05G5ajojPc25R0Q81fACPyvFC7ZabpEI; // <-- paste your Google Maps API key here
+const DEST=[
+ {n:"Wilmington",a:"408 Landmark Dr, Wilmington, NC 28412",c:"#e53935"},
+ {n:"New Hill",a:"9904 Horton Road, New Hill, NC 27562",c:"#1e88e5"},
+ {n:"Wendell",a:"6816 Latigo Lane, Wendell, NC 27591",c:"#43a047"}];
+let map,Route,overlays=[];
+window.initMap=async()=>{
+ const {Map}=await google.maps.importLibrary("maps");
+ ({Route}=await google.maps.importLibrary("routes"));
+ map=new Map(document.getElementById("map"),{center:{lat:35.5,lng:-78.3},zoom:7,mapId:"DEMO_MAP_ID"});
+};
+const s=document.createElement("script");
+s.src=`https://maps.googleapis.com/maps/api/js?key=${KEY}&loading=async&callback=initMap&v=weekly`;
+document.head.appendChild(s);
+
+const fmt=ms=>{const m=Math.round(ms/60000),h=Math.floor(m/60);return h?`${h} hr ${m%60} min`:`${m} min`};
+document.getElementById("go").onclick=async()=>{
+ const o=document.getElementById("o").value.trim(),res=document.getElementById("res");
+ if(!o||!Route)return;
+ overlays.forEach(x=>x.setMap(null));overlays=[];res.innerHTML="Calculating…";
+ const bounds=new google.maps.LatLngBounds();let html="";
+ await Promise.all(DEST.map(async d=>{
+  try{
+   const {routes}=await Route.computeRoutes({origin:o,destination:d.a,travelMode:"DRIVING",
+     routingPreference:"TRAFFIC_AWARE",fields:["durationMillis","distanceMeters","path"]});
+   const r=routes[0];
+   r.createPolylines({polylineOptions:{strokeColor:d.c,strokeWeight:5}}).forEach(p=>{p.setMap(map);overlays.push(p)});
+   r.path.forEach(p=>bounds.extend(p));
+   d.out=`<div class="row" style="--c:${d.c}"><div><b>${d.n}</b><small>${d.a}</small></div><div class="t">${fmt(r.durationMillis)}<small>${(r.distanceMeters/1609.34).toFixed(0)} mi</small></div></div>`;
+  }catch(e){d.out=`<div class="row" style="--c:${d.c}"><div><b>${d.n}</b></div><div>Not found</div></div>`;console.error(e)}
+ }));
+ res.innerHTML=DEST.map(d=>d.out).join("");
+ if(!bounds.isEmpty())map.fitBounds(bounds);
+};
+</script></body></html>
